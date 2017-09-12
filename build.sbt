@@ -98,18 +98,20 @@ lazy val benchmarks = (project in file("benchmarks"))
   .dependsOn(core % "test->test;compile->compile")
 
 lazy val root = (project in file("."))
+  .enablePlugins(GhpagesPlugin, ScalaUnidocPlugin)
   .settings(commonSettings: _*)
   .settings(docSettings: _*)
   .settings(noPublishSettings: _*)
   .settings(releaseSettings: _*)
   .aggregate(core, akka, shapelessScanner)
 
-import UnidocKeys._
-lazy val docSettings = unidocSettings ++ site.settings ++ ghpages.settings ++ Seq(
+lazy val nestedDir = settingKey[String]("")
+nestedDir := "latest/api"
+lazy val docSettings = Seq(
   autoAPIMappings := true,
   unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(core, akka),
-  SiteKeys.siteSourceDirectory := file("site"),
-  site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+  siteSourceDirectory := file("site"),
+  addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), nestedDir),
   git.remoteRepo := s"git@github.com:$username/$repo.git"
 )
 

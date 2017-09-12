@@ -3,22 +3,16 @@ machine:
     SBT_GHPAGES_COMMIT_MESSAGE: 'Publishing Scaladoc [ci skip]'
   java:
     version: oraclejdk8
+  services:
+    - docker
 
 test:
   override:
-    - sbt +test
+    - test.sh
 
 deployment:
   master:
     branch: master
     owner: pathikrit
     commands:
-      - sbt updateImpactSubmit
-      - sbt clean coverage test coverageReport coverageAggregate
-      - bash <(curl -s https://codecov.io/bash)
-      - sbt codacyCoverage
-      - git config --global user.email "pathikritbhowmick@msn.com"
-      - git config --global user.name "circle-ci"
-      - git config --global push.default simple
-      - sbt ghpagesPushSite
-      - sbt +publish
+      - deploy.sh
